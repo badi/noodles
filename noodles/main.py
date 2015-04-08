@@ -19,8 +19,7 @@ def getopts():
     parsers = args.add_subparsers(help='Graph dependencies')
 
     graphP = parsers.add_parser('graph')
-    graphP.add_argument('path', nargs='+', help='Python modules to analyze')
-    graphP.set_defaults(func=graph.main)
+    graph.add_args(graphP)
 
     return args.parse_args()
 
