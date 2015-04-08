@@ -66,6 +66,7 @@ class TestImports(unittest.TestCase):
 
         self.source = textwrap.dedent("""\
         import os
+        from os.path import abspath
         from tempfile import NamedTemporaryFile, mkstemp
         """)
 
