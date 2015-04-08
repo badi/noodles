@@ -1,4 +1,6 @@
+import copy
 import imp
+import sys
 
 import types
 import unittest
@@ -52,6 +54,34 @@ def find_module(name, path=None):
     return module
 
 
+def dummy_module(name):
+    """Create an empy module with the given name.
+
+    Note: this does *not* insert the module into `sys.modules`.
+
+    :param name: name of the module
+    :returns: the new module
+    :rtype: module
+
+    """
+    return imp.new_module(name)
+
+
+def save_sys_modules():
+
+    class stack(object):
+        def __init__(self):
+            self._modules_backup = None
+
+        def __enter__(self):
+            self._modules_backup = copy.copy(sys.modules)
+
+        def __exit__(self, *args, **kws):
+            sys.modules = self._modules_backup
+
+    return stack()
+
+
 class TestImportMagic(unittest.TestCase):
     def test_find_simple(self):
         mod = find_module('os')
@@ -60,3 +90,19 @@ class TestImportMagic(unittest.TestCase):
     def test_find_hierarchical(self):
         mod = find_module('os.path')
         self.assertIsInstance(mod, types.ModuleType)
+
+    def test_save_sys_modules(self):
+        module_name = 'test_module_0000000000000000000000000000000000000'
+        self.assertNotIn(module_name, sys.modules)
+        with save_sys_modules():
+            mod = imp.new_module(module_name)
+            sys.modules[module_name] = mod
+            self.assertIn(module_name, sys.modules)
+        self.assertNotIn(module_name, sys.modules)
+
+    def test_dummy_module(self):
+        module_name = 'test_module_0000000000000000000000000000000000000'
+        self.assertNotIn(module_name, sys.modules)
+        mod = dummy_module(module_name)
+        self.assertIsInstance(mod, types.ModuleType)
+        self.assertNotIn(module_name, sys.modules)
