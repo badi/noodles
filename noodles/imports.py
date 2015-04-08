@@ -1,4 +1,5 @@
 import ast
+import inspect
 import operator
 import tempfile
 import textwrap
@@ -12,10 +13,15 @@ class EdgeLabels:
 
 
 class Color:
-    MODULE = 'black'
-    IMPORT = 'blue'
+    # FIXME: until a programatic way of determining if a module is
+    # provided with Python proper of is an externally installed
+    # package, these two will be identical
+    MODULE_INTERN = 'black'
+    MODULE_EXTERN = 'black'
+
     ATTRIBUTE = 'black'
     ROOT = 'blue'
+    IMPORT = 'blue'
 
 
 class NodeLabels:
@@ -46,11 +52,12 @@ class Dependencies(object):
     def add_root(self, name):
         self._add_node(name, color=Color.ROOT)
 
-    def add_module(self, name):
-        self._add_node(name, color=Color.MODULE)
+    def add_module(self, name, builtin=True):
+        c = Color.MODULE_INTERN if builtin else Color.MODULE_EXTERN
+        self._add_node(name, color=c)
 
-    def add_submodule(self, root, module):
-        self.add_module(module)
+    def add_submodule(self, root, module, builtin=True):
+        self.add_module(module, builtin=builtin)
         self._G.add_edge(root, module,
                          color=Color.IMPORT)
 
