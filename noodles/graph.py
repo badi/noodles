@@ -2,13 +2,13 @@
 from . import imports
 
 """
-Display the interactions and dependencies.
+Graph the interactions and dependencies.
 """
 
 
-if __name__ == '__main__':
-    import sys
-    module_paths = sys.argv[1:]
+def main(opts):
+
+    module_paths = opts.path
 
     G = imports.Dependencies()
 
