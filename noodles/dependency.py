@@ -29,6 +29,11 @@ class NodeLabels:
 class Dependencies(object):
     def __init__(self):
         self._G = nx.DiGraph()
+        self._roots = set()
+
+    @property
+    def roots(self):
+        return self._roots
 
     @property
     def node(self):
@@ -59,6 +64,7 @@ class Dependencies(object):
 
     def add_root(self, name):
         self._add_node(name, color=Color.ROOT)
+        self._roots.add(name)
 
     def add_module(self, name, builtin=True):
         c = Color.MODULE_INTERN if builtin else Color.MODULE_EXTERN
@@ -91,6 +97,7 @@ class Dependencies(object):
         G = nx.compose(D0._G, D1._G)
         D = cls()
         D._G = G
+        D._roots = D0._roots.union(D1._roots)
         return D
 
     def to_agraph(self):
