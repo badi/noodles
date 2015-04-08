@@ -1,5 +1,9 @@
-import networkx as nx
+import copy
+import sys
 import unittest
+import networkx as nx
+
+from . import import_magic
 
 
 class EdgeLabels:
@@ -26,10 +30,55 @@ class NodeLabels:
     ATTRIBUTE = 'attr'
 
 
+class Alias(object):
+    """This handles import rename.  For example, `os.path` and `path` are
+    the same module in the following, even though they have different
+    names:
+
+    >>> import os
+    >>> from os import path
+    >>> os.path == path
+    True
+    """
+
+    def __init__(self):
+
+        # this maps entities (modules, functions, etc) to a string
+        # >>> import os
+        # >>> from os import path
+        # ...
+        # >>> _map[os.path]
+        # 'path'
+        # >>> _map[path]
+        # 'path'
+        self._map = dict()
+
+    def lookup(self, module_name):
+        if module_name in sys.modules:
+            module = sys.modules[module_name]
+        else:
+            module = import_magic.find_module(module_name)
+
+        if module in self._map:
+            return self._map[module]
+        else:
+            self._map[module] = module_name
+            return module_name
+
+
 class Dependencies(object):
     def __init__(self):
+        # for some reason these **must** be imported otherwise really
+        # bizzare error errors occur.
+        #
+        # This is what happens. Running
+        # $ nosetests --all-modules noodles
+        # will cause 'KeyError's saying that these are missing.
+        import email, xmlrpclib
+
         self._G = nx.DiGraph()
         self._roots = set()
+        self._aliases = Alias()
 
     @property
     def roots(self):
@@ -68,7 +117,8 @@ class Dependencies(object):
 
     def add_module(self, name, builtin=True):
         c = Color.MODULE_INTERN if builtin else Color.MODULE_EXTERN
-        self._add_node(name, color=c)
+        realname = self._aliases.lookup(name)
+        self._add_node(realname, color=c)
 
     def add_submodule(self, root, module, builtin=True):
         self.add_module(module, builtin=builtin)
@@ -76,7 +126,7 @@ class Dependencies(object):
                          color=Color.IMPORT)
 
     def add_attribute(self, name):
-        self._add_node(name, label=NodeLabels.ATTRIBUTE, color=Color.ATTRIBUTE)
+        self._add_node(name, color=Color.ATTRIBUTE)
 
     def add_subattribute(self, root, attr):
         self.add_attribute(root)
@@ -107,14 +157,30 @@ class Dependencies(object):
 class TestDependencies(unittest.TestCase):
     def setUp(self):
         self.G = Dependencies()
-        self.r = 'test_root'
+        self._root_name = 'test_root'
         self.child_template = 'test_node_{}'
         self.counter = 0
+        self.modules_backup = copy.copy(sys.modules)
+
+    def tearDown(self):
+        sys.modules = self.modules_backup
 
     def new_child(self):
         name = self.child_template.format(self.counter)
         self.counter += 1
+
+        module = import_magic.dummy_module(name)
+        sys.modules[name] = module
+
         return name
+
+    @property
+    def r(self):
+        "make sure the root module is importable"
+        if self._root_name not in sys.modules:
+            mod = import_magic.dummy_module(self._root_name)
+            sys.modules[self._root_name] = mod
+        return self._root_name
 
     @property
     def c(self):
