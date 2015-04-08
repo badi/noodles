@@ -46,6 +46,17 @@ def _create_requirements_file(content):
 
 class TestRequirements(unittest.TestCase):
 
+    def setUp(self):
+        self.expected = [
+            'hello',
+            'world==42'
+        ]
+        self.content = '\n'.join(self.expected) + textwrap.dedent("""
+        # a comment
+        """)
+
+        self.tmp = _create_requirements_file(self.content)
+
     def test_parse_requirements_file(self):
         """Check ensure that a requirements file can be parsed.
 
@@ -54,20 +65,12 @@ class TestRequirements(unittest.TestCase):
 
         """
 
-        expected = [
-            'hello',
-            'world==42'
-        ]
-        content = '\n'.join(expected) + textwrap.dedent("""
-        # a comment
-        """)
-        tmp = _create_requirements_file(content)
-        actual = list(parse_requirements_file(tmp.name))
+        actual = list(parse_requirements_file(self.tmp.name))
 
         for a in actual:
-            self.assertIn(a, expected)
+            self.assertIn(a, self.expected)
 
-        for e in expected:
+        for e in self.expected:
             self.assertIn(e, actual)
 
 if __name__ == '__main__':
