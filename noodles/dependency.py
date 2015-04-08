@@ -18,6 +18,8 @@ class Color:
     ROOT = 'blue'
     IMPORT = 'blue'
 
+    LIBRARY = 'purple'
+
 
 class NodeLabels:
     MODULE = 'module'
@@ -75,6 +77,14 @@ class Dependencies(object):
         self.add_attribute(attr)
         self._G.add_edge(root, attr,
                          color=Color.ATTRIBUTE)
+
+    def add_library(self, name):
+        self._G.add_node(name, color=Color.LIBRARY)
+
+    def add_sublibrary(self, parent, lib):
+        self._G.add_node(parent)
+        self.add_library(lib)
+        self._G.add_edge(parent, lib)
 
     @classmethod
     def compose(cls, D0, D1):
@@ -162,3 +172,16 @@ class TestDependencies(unittest.TestCase):
         self.is_edge(root, child)
         self.edge_color(root, child, Color.ATTRIBUTE)
 
+    def test_add_library(self):
+        name = self.r
+        self.G.add_library(name)
+        self.is_node(name)
+        self.node_color(name, Color.LIBRARY)
+
+    def test_add_sublibrary(self):
+        parent = self.r
+        lib = self.c
+        self.G.add_sublibrary(parent, lib)
+        self.is_node(parent)
+        self.is_node(lib)
+        self.node_color(lib, Color.LIBRARY)
