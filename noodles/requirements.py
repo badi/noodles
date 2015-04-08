@@ -78,12 +78,7 @@ class TestRequirements(unittest.TestCase):
         self.tmp = _create_requirements_file(self.content)
 
     def test_parse_requirements_file(self):
-        """Check ensure that a requirements file can be parsed.
-
-        :returns:
-        :rtype:
-
-        """
+        "Ensure that a requirements file can be parsed."
 
         actual = list(parse_requirements_file(self.tmp.name))
 
@@ -96,6 +91,7 @@ class TestRequirements(unittest.TestCase):
         self.tmp.seek(0)
 
     def test_graph_requirements(self):
+        "Ensure that requirements can be added to a dependency graph"
         root_name = 'test_root'
 
         G = graph_requirements(root_name, self.tmp.name)
