@@ -83,6 +83,10 @@ def save_sys_modules():
 
 
 class TestImportMagic(unittest.TestCase):
+    def setUp(self):
+        self.module_name = 'test_module_0000000000000000000000000000000000000'
+
+
     def test_find_simple(self):
         "Import a simple existing module"
         mod = find_module('os')
@@ -95,18 +99,20 @@ class TestImportMagic(unittest.TestCase):
 
     def test_save_sys_modules(self):
         "Do not clobber sys.modules"
-        module_name = 'test_module_0000000000000000000000000000000000000'
-        self.assertNotIn(module_name, sys.modules)
+        self.assertNotIn(self.module_name, sys.modules)
         with save_sys_modules():
-            mod = imp.new_module(module_name)
-            sys.modules[module_name] = mod
-            self.assertIn(module_name, sys.modules)
-        self.assertNotIn(module_name, sys.modules)
+            mod = imp.new_module(self.module_name)
+            sys.modules[self.module_name] = mod
+            self.assertIn(self.module_name, sys.modules)
+        self.assertNotIn(self.module_name, sys.modules)
 
     def test_dummy_module(self):
         "Creating a dummy module should not clobber `sys.modules`"
-        module_name = 'test_module_0000000000000000000000000000000000000'
-        self.assertNotIn(module_name, sys.modules)
-        mod = dummy_module(module_name)
+        self.assertNotIn(self.module_name, sys.modules)
+        mod = dummy_module(self.module_name)
         self.assertIsInstance(mod, types.ModuleType)
-        self.assertNotIn(module_name, sys.modules)
+        self.assertNotIn(self.module_name, sys.modules)
+
+
+if __name__ == '__main__':
+    unittest.main()
