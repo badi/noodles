@@ -146,16 +146,19 @@ class TestDependencies(unittest.TestCase):
         self.assertIn((s, t), self.G.edges())
 
     def test_add_root(self):
+        "Adding a root node"
         name = self.r
         self.G.add_root(name)
         self.is_root(name)
 
     def test_add_module(self):
+        "An added module should be a node"
         name = self.c
         self.G.add_module(name)
         self.is_module(name)
 
     def test_add_submodule(self):
+        "An added submodule should be a node"
         root = self.r
         child = self.c
         self.G.add_submodule(root, child)
@@ -165,12 +168,14 @@ class TestDependencies(unittest.TestCase):
         self.edge_color(root, child, Color.IMPORT)
 
     def test_add_attribute(self):
+        "An imported attribute should be a node"
         name = self.c
         self.G.add_attribute(name)
         self.is_node(name)
         self.is_attribute(name)
 
     def test_add_subattribute(self):
+        "Importing a an attribute should create an edge"
         root = self.r
         child = self.c
         self.G.add_subattribute(root, child)
@@ -180,12 +185,14 @@ class TestDependencies(unittest.TestCase):
         self.edge_color(root, child, Color.ATTRIBUTE)
 
     def test_add_library(self):
+        "Adding a library should create a node"
         name = self.r
         self.G.add_library(name)
         self.is_node(name)
         self.node_color(name, Color.LIBRARY)
 
     def test_add_sublibrary(self):
+        "Adding a sublibrary should create an edge"
         parent = self.r
         lib = self.c
         self.G.add_sublibrary(parent, lib)

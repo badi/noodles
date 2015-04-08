@@ -84,14 +84,17 @@ def save_sys_modules():
 
 class TestImportMagic(unittest.TestCase):
     def test_find_simple(self):
+        "Import a simple existing module"
         mod = find_module('os')
         self.assertIsInstance(mod, types.ModuleType)
 
     def test_find_hierarchical(self):
+        "Import a hierarchical existing module"
         mod = find_module('os.path')
         self.assertIsInstance(mod, types.ModuleType)
 
     def test_save_sys_modules(self):
+        "Do not clobber sys.modules"
         module_name = 'test_module_0000000000000000000000000000000000000'
         self.assertNotIn(module_name, sys.modules)
         with save_sys_modules():
@@ -101,6 +104,7 @@ class TestImportMagic(unittest.TestCase):
         self.assertNotIn(module_name, sys.modules)
 
     def test_dummy_module(self):
+        "Creating a dummy module should not clobber `sys.modules`"
         module_name = 'test_module_0000000000000000000000000000000000000'
         self.assertNotIn(module_name, sys.modules)
         mod = dummy_module(module_name)
