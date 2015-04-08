@@ -12,6 +12,7 @@ class Color:
     # package, these two will be identical
     MODULE_INTERN = 'black'
     MODULE_EXTERN = 'black'
+    MODULE = MODULE_INTERN
 
     ATTRIBUTE = 'black'
     ROOT = 'blue'
@@ -27,8 +28,19 @@ class Dependencies(object):
     def __init__(self):
         self._G = nx.DiGraph()
 
+    @property
+    def node(self):
+        return self._G.node
+
+    @property
+    def edge(self):
+        return self._G.edge
+
     def nodes(self):
         return self._G.nodes()
+
+    def edges(self):
+        return self._G.edges()
 
     def out_edges(self, *args, **kws):
         return self._G.out_edges(*args, **kws)
@@ -56,10 +68,11 @@ class Dependencies(object):
                          color=Color.IMPORT)
 
     def add_attribute(self, name):
-        self._add_node(name, label=NodeLabels.ATTRIBUTE)
+        self._add_node(name, label=NodeLabels.ATTRIBUTE, color=Color.ATTRIBUTE)
 
     def add_subattribute(self, root, attr):
         self.add_attribute(root)
+        self.add_attribute(attr)
         self._G.add_edge(root, attr,
                          color=Color.ATTRIBUTE)
 
