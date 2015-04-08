@@ -3,8 +3,8 @@ import os
 import textwrap
 
 
-### IMPORTANT use semantic versioning
-### http://semver.org/
+# IMPORTANT use semantic versioning
+# http://semver.org/
 VERSION = '0.1.1'
 
 
