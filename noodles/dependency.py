@@ -70,14 +70,6 @@ class Alias(object):
 
 class Dependencies(object):
     def __init__(self):
-        # for some reason these **must** be imported otherwise really
-        # bizzare error errors occur.
-        #
-        # This is what happens. Running
-        # $ nosetests --all-modules noodles
-        # will cause 'KeyError's saying that these are missing.
-        import email, xmlrpclib
-
         self._G = nx.DiGraph()
         self._roots = set()
         self._aliases = Alias()
@@ -158,6 +150,14 @@ class Dependencies(object):
 
 class TestDependencies(unittest.TestCase):
     def setUp(self):
+        # for some reason these **must** be imported otherwise really
+        # bizzare error errors occur.
+        #
+        # This is what happens. Running
+        # $ nosetests --all-modules noodles
+        # will cause 'KeyError's saying that these are missing.
+        import email, xmlrpclib
+
         self.G = Dependencies()
         self._root_name = 'test_root'
         self.child_template = 'test_node_{}'
