@@ -267,3 +267,7 @@ class TestDependencies(unittest.TestCase):
         self.is_node(parent)
         self.is_node(lib)
         self.node_color(lib, Color.LIBRARY)
+
+
+if __name__ == '__main__':
+    unittest.main()
