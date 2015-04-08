@@ -66,6 +66,8 @@ class Alias(object):
             return module_name
 
 
+# FIXME: test suite for Alias class
+
 class Dependencies(object):
     def __init__(self):
         # for some reason these **must** be imported otherwise really
