@@ -1,2 +1,7 @@
 pip
 nose
+
+# graphs
+networkx
+matplotlib
+pygraphviz

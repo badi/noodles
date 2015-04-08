@@ -1,7 +1,18 @@
+"""
+This module deals with parsing requirments.
+
+2015-04-07 Parse requrements.txt
+
+"""
+
+import ast
 import tempfile
 import textwrap
 import unittest
+import operator
+import os
 
+import networkx as nx
 
 def parse_requirements_file(path):
     """Parse the requirements.txt
@@ -16,7 +27,6 @@ def parse_requirements_file(path):
 
     for req in pip_parse_reqs(path):
         yield str(req.req)
-
 
 def _create_requirements_file(content):
     """Create a requirements file
@@ -62,7 +72,6 @@ class TestRequirements(unittest.TestCase):
 
         for e in expected:
             self.assertIn(e, actual)
-
 
 if __name__ == '__main__':
     unittest.main()
