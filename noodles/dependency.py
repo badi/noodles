@@ -57,7 +57,10 @@ class Alias(object):
         if module_name in sys.modules:
             module = sys.modules[module_name]
         else:
-            module = import_magic.find_module(module_name)
+            try:
+                module = import_magic.find_module(module_name)
+            except ImportError:
+                module = import_magic.dummy_module(module_name)
 
         if module in self._map:
             return self._map[module]

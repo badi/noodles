@@ -28,9 +28,14 @@ def parse_module_imports(root_name, module):
                 D.add_submodule(root_name, name)
 
         elif type(node) is ast.ImportFrom:
-            D.add_submodule(root_name, node.module)
+            # relative imports (from . import <name1>, <name2>, ...)
+            # the "module" attribute is None
+            if node.module is not None:
+                D.add_submodule(root_name, node.module)
+
             for name in node.names:
                 D.add_subattribute(node.module, name.name)
+
 
         else:
             continue
@@ -103,6 +108,13 @@ class TestImports(unittest.TestCase):
 
         G = scan_module(tmp.name)
         self.test_parse_module_imports(G=G, name=tmp.name)
+
+    def test_relative_imports(self):
+        "Make sure that relative imports (from . import ..., etc) work"
+        source = textwrap.dedent("""\
+        from . import hello
+        """)
+        parse_module_imports(self.module_name, source)
 
 
 if __name__ == '__main__':
