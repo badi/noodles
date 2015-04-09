@@ -69,7 +69,21 @@ class Alias(object):
             return module_name
 
 
-# FIXME: test suite for Alias class
+class TestAlias(unittest.TestCase):
+    def test_lookup_new_dummy(self):
+        "Lookup new dummy module"
+        module_name = 'test_module'
+        alias = Alias()
+        name = alias.lookup(module_name)
+        self.assertEqual(name, module_name)
+
+    def test_lookup_system_module(self):
+        "Lookup a system module"
+        module_name = 'os.path'
+        alias = Alias()
+        name = alias.lookup(module_name)
+        self.assertEqual(name, module_name)
+
 
 class Dependencies(object):
     def __init__(self):
