@@ -5,7 +5,7 @@ import textwrap
 
 # IMPORTANT use semantic versioning
 # http://semver.org/
-VERSION = '0.5.0'
+VERSION = '0.5.1'
 
 
 module_dir = 'noodles'
